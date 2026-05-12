@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "9db94d42-3f07-4665-850e-2ae848d7e2a0"
+      }
+    },
+    "android": {
+      "package": "com.chandtricker.workspace"
+    }
+  }
+}

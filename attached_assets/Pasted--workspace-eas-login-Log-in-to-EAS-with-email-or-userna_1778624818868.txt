@@ -1,0 +1,37 @@
+~/workspace$ eas login
+Log in to EAS with email or username (exit and run eas login --help to see other login options)
+✔ Email or username … muhammadsalmanabbasi122@gmail.com
+✔ Password … *********************************
+Logged in
+~/workspace$ eas build -p android --profile preview
+✔ Generated eas.json. Learn more: https://docs.expo.dev/build-reference/eas-json/
+EAS project not configured.
+✔ Would you like to automatically create an EAS project for @chandtricker/workspace? … yes
+✔ Created @chandtricker/workspace: https://expo.dev/accounts/chandtricker/projects/workspace on EAS
+✔ Linked local project to EAS project 9db94d42-3f07-4665-850e-2ae848d7e2a0
+Resolved "preview" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "preview" environment on EAS.
+
+📝  Android application id Learn more: https://expo.fyi/android-package
+✔ What would you like your Android application id to be? … com.chandtricker.workspace
+No remote versions are configured for this project, versionCode will be initialized based on the value from the local project.
+✔ Initialized versionCode with 1.
+
+
+✔ EAS Build does not officially support building managed project with Expo SDK < 41. Do you want to proceed? … yes
+✔ Using remote Android credentials (Expo server)
+✔ Generate a new Android Keystore? … yes
+Detected that you do not have keytool installed locally.
+✔ Generating keystore in the cloud...
+✔ Created keystore
+
+Compressing project files and uploading to EAS Build. Learn more: https://expo.fyi/eas-build-archive
+✔ Uploaded to EAS 3s
+
+See logs: https://expo.dev/accounts/chandtricker/projects/workspace/builds/6776bf0a-79a5-469a-93cd-d88c3a423130
+
+Waiting for build to complete. You can press Ctrl+C to exit.
+✖ Build failed
+
+🤖 Android build failed:
+Unknown error. See logs of the Install dependencies build phase for more information.
