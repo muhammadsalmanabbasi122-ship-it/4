@@ -1,0 +1,137 @@
+App Name: ChandMod
+Platform: Thunkable (Android APK focus)
+Purpose: Users apna account bana kar koi bhi website URL enter karein aur us URL ka Android APK file generate karein jo unke phone par install ho sake.
+
+=== SCREENS ===
+
+1. SPLASH SCREEN
+- App logo (chand/moon icon)
+- App name "ChandMod" bold
+- 2 second delay ke baad auto Login screen par jaye
+- Background: dark navy blue (#1a1a2e)
+- Text: white/gold color
+
+2. LOGIN / SIGNUP SCREEN
+- Toggle: "Login" aur "Sign Up" tabs
+- Sign Up fields: Name, Email, Password, Confirm Password
+- Login fields: Email, Password
+- "Forgot Password?" link
+- Firebase Authentication use karo
+- Google Sign-In button bhi add karo
+- Bottom par: "Already have account? Login" / "New user? Sign Up"
+
+3. HOME SCREEN (Main Screen)
+- Top: ChandMod logo + user avatar (top right)
+- Big text: "Kisi bhi website ko APK banao"
+- URL Input field: "Website ka URL yahan paste karein" placeholder
+- Customize options:
+  * App Name input (optional)
+  * App Icon upload (optional)
+  * App Color theme (color picker)
+- "APK Banao" button (big, prominent)
+- Bottom navigation: Home | History | Settings | Profile
+
+4. CONVERTING SCREEN
+- Progress bar / loading animation (chand ghoomta hua)
+- Status text: "Aapka APK ban raha hai..."
+- Steps show karo: URL Check → Packaging → Ready
+- Cancel button
+
+5. DOWNLOAD SCREEN
+- Success checkmark animation
+- "Aapka APK tayar hai!" message
+- APK details: App name, URL, Size, Date
+- "APK Download Karein" button (downloads the file)
+- "Ghar Jao" button
+- Share button (WhatsApp/other apps pe share)
+
+6. HISTORY SCREEN
+- List of all APKs user ne banaye
+- Har item mein: App name, URL, date, size
+- Har item pe: Re-download button, Delete button
+- Empty state: "Abhi tak koi APK nahi bana"
+
+7. PROFILE SCREEN
+- User photo / avatar
+- Name aur Email
+- "Edit Profile" button
+- Stats: Kitne APK banaye
+- "Logout" button
+
+8. SETTINGS SCREEN
+- Dark Mode toggle
+- Language: Urdu / English
+- Notification on/off
+- "App ke baare mein" (About)
+- "Privacy Policy" link
+- "Humse Rabta Karein" (Contact Us)
+
+=== BACKEND / DATABASE ===
+
+- Firebase Authentication: Email/Password + Google Sign-In
+- Firestore Database: User data aur APK history store karne ke liye
+- Storage: Firebase Storage (user profile photos ke liye)
+
+Firestore Structure:
+  users/
+    {userId}/
+      name: string
+      email: string
+      photoUrl: string
+      createdAt: timestamp
+      apks/
+        {apkId}/
+          appName: string
+          url: string
+          downloadLink: string
+          createdAt: timestamp
+          size: string
+
+=== APK GENERATION LOGIC ===
+
+Method: WebView Wrapper
+- User URL enter karta hai
+- Thunkable ka WebViewer component use karo
+- URL ko WebView mein load karo
+- App name user ka diya hua set karo
+- Thunkable's "Publish as APK" feature use karo ya API se download link generate karo
+- Download link Firestore mein save karo
+
+Alternative: AppsGeyser API ya WebView APK Builder API integrate karo:
+- API endpoint par POST request bhejo with URL + App Name
+- Response mein APK download link aaye
+- Wo link user ko dikhao aur Firestore mein save karo
+
+=== DESIGN RULES ===
+
+Color Scheme:
+- Primary: #1a1a2e (dark navy)
+- Accent: #FFD700 (gold/chand color)
+- Secondary: #16213e
+- Text: White on dark, Dark on light
+- Buttons: Gold background, dark text
+
+Fonts:
+- Headings: Bold, large
+- Body: Regular, readable
+- Urdu support add karo
+
+Icons:
+- Moon/Chand icon as logo
+- Material Design icons throughout
+
+=== ADDITIONAL FEATURES ===
+
+- URL Validation: Check karo URL valid hai ya nahi
+- Internet check: Offline hone par message dikhao
+- Rating popup: 5 APK banane ke baad "App rate karein" dikhao
+- Share feature: APK link WhatsApp pe share ho
+- Push Notifications: "Aapka APK tayar hai!" notification
+
+=== IMPORTANT NOTES ===
+
+- Sab screens mein back button properly kaam kare
+- Loading states sab jagah dikhao
+- Error messages user-friendly Urdu/English mein hon
+- App Android ke liye APK export kare (Thunkable Download as APK)
+- Firebase project alag se setup karna hoga
