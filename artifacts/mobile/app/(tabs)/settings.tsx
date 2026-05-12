@@ -18,7 +18,7 @@ export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const [darkMode, setDarkMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
-  const [language, setLanguage] = useState<"urdu" | "english">("urdu");
+  const [language, setLanguage] = useState<"en" | "ur">("en");
 
   const topPad = insets.top + (Platform.OS === "web" ? 67 : 16);
 
@@ -45,7 +45,7 @@ export default function SettingsScreen() {
           <Text style={styles.menuText}>Dark Mode</Text>
           <Switch
             value={darkMode}
-            onValueChange={(v) => toggleSwitch(setDarkMode, darkMode)}
+            onValueChange={() => toggleSwitch(setDarkMode, darkMode)}
             trackColor={{ false: "#0f3460", true: "#FFD700" }}
             thumbColor="#ffffff"
           />
@@ -58,7 +58,7 @@ export default function SettingsScreen() {
           <Text style={styles.menuText}>Notifications</Text>
           <Switch
             value={notifications}
-            onValueChange={(v) => toggleSwitch(setNotifications, notifications)}
+            onValueChange={() => toggleSwitch(setNotifications, notifications)}
             trackColor={{ false: "#0f3460", true: "#FFD700" }}
             thumbColor="#ffffff"
           />
@@ -70,17 +70,17 @@ export default function SettingsScreen() {
           <Feather name="globe" size={18} color="#FFD700" />
           <Text style={styles.menuText}>Language</Text>
           <View style={styles.langToggle}>
-            {(["urdu", "english"] as const).map((lang) => (
+            {([["en", "EN"], ["ur", "اردو"]] as const).map(([code, label]) => (
               <TouchableOpacity
-                key={lang}
-                style={[styles.langOption, language === lang && styles.langOptionActive]}
+                key={code}
+                style={[styles.langOption, language === code && styles.langOptionActive]}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setLanguage(lang);
+                  setLanguage(code);
                 }}
               >
-                <Text style={[styles.langText, language === lang && styles.langTextActive]}>
-                  {lang === "urdu" ? "اردو" : "EN"}
+                <Text style={[styles.langText, language === code && styles.langTextActive]}>
+                  {label}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -95,12 +95,12 @@ export default function SettingsScreen() {
           onPress={() =>
             Alert.alert(
               "ChandMod",
-              "Version: 1.0.0\n\nChandMod aapko kisi bhi website ka APK banane ki suvidha deta hai. Sirf URL enter karein aur APK tayyar ho jata hai!",
+              "Version: 1.0.0\n\nChandMod lets you turn any website into an Android APK. Just enter a URL and your APK is ready to download!",
             )
           }
         >
           <Feather name="info" size={18} color="#FFD700" />
-          <Text style={styles.menuText}>App ke Baare Mein</Text>
+          <Text style={styles.menuText}>About</Text>
           <Text style={styles.menuValue}>v1.0.0</Text>
           <Feather name="chevron-right" size={16} color="#8892b0" />
         </TouchableOpacity>
@@ -123,7 +123,7 @@ export default function SettingsScreen() {
           onPress={() => Linking.openURL("mailto:support@chandmod.app")}
         >
           <Feather name="mail" size={18} color="#FFD700" />
-          <Text style={styles.menuText}>Humse Rabta Karein</Text>
+          <Text style={styles.menuText}>Contact Us</Text>
           <Feather name="chevron-right" size={16} color="#8892b0" />
         </TouchableOpacity>
 
@@ -132,11 +132,11 @@ export default function SettingsScreen() {
         <TouchableOpacity
           style={styles.menuItem}
           onPress={() =>
-            Alert.alert("Rate Karein", "Aapki rating hamara hausla badhati hai! App Store par 5 star zaroor dein.")
+            Alert.alert("Rate ChandMod", "Your rating helps us grow! Please give us 5 stars on the Play Store.")
           }
         >
           <Feather name="star" size={18} color="#FFD700" />
-          <Text style={styles.menuText}>App Rate Karein</Text>
+          <Text style={styles.menuText}>Rate the App</Text>
           <Feather name="chevron-right" size={16} color="#8892b0" />
         </TouchableOpacity>
       </View>

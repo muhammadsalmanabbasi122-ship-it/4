@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -40,11 +41,11 @@ export default function HomeScreen() {
   async function handleGenerate() {
     const cleanUrl = url.trim().startsWith("http") ? url.trim() : `https://${url.trim()}`;
     if (!url.trim()) {
-      Alert.alert("URL Zaroori Hai", "Koi website URL enter karein.");
+      Alert.alert("URL Required", "Please enter a website URL.");
       return;
     }
     if (!isValidUrl(url.trim())) {
-      Alert.alert("Galat URL", "Sahi website URL enter karein, jaise: https://example.com");
+      Alert.alert("Invalid URL", "Please enter a valid URL, e.g. https://example.com");
       return;
     }
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -77,8 +78,8 @@ export default function HomeScreen() {
     >
       <View style={styles.headerRow}>
         <View>
-          <Text style={styles.greeting}>Salam, {firstName}! 👋</Text>
-          <Text style={styles.subGreeting}>APKs banaye: {user?.apkCount ?? 0}</Text>
+          <Text style={styles.greeting}>Hello, {firstName}! 👋</Text>
+          <Text style={styles.subGreeting}>APKs created: {user?.apkCount ?? 0}</Text>
         </View>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{firstName.charAt(0).toUpperCase()}</Text>
@@ -86,13 +87,17 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.heroCard}>
-        <Text style={styles.moonIcon}>☽</Text>
-        <Text style={styles.heroTitle}>Kisi bhi website ko APK banao</Text>
-        <Text style={styles.heroSub}>URL enter karo, baaki ChandMod karta hai</Text>
+        <Image
+          source={require("@/assets/images/icon.png")}
+          style={styles.heroIcon}
+          contentFit="contain"
+        />
+        <Text style={styles.heroTitle}>Turn any website into an APK</Text>
+        <Text style={styles.heroSub}>Enter a URL and ChandMod does the rest</Text>
       </View>
 
       <View style={styles.formCard}>
-        <Text style={styles.formLabel}>Website ka URL</Text>
+        <Text style={styles.formLabel}>Website URL</Text>
         <View style={styles.inputRow}>
           <Feather name="link" size={18} color="#8892b0" />
           <TextInput
@@ -112,12 +117,12 @@ export default function HomeScreen() {
           )}
         </View>
 
-        <Text style={styles.formLabel}>App ka naam (optional)</Text>
+        <Text style={styles.formLabel}>App Name (optional)</Text>
         <View style={styles.inputRow}>
           <Feather name="smartphone" size={18} color="#8892b0" />
           <TextInput
             style={styles.input}
-            placeholder="Meri App"
+            placeholder="My App"
             placeholderTextColor="#8892b0"
             value={appName}
             onChangeText={setAppName}
@@ -125,7 +130,7 @@ export default function HomeScreen() {
         </View>
 
         <TouchableOpacity style={styles.generateBtn} onPress={handleGenerate} activeOpacity={0.85}>
-          <Text style={styles.generateBtnText}>☽ APK Banao</Text>
+          <Text style={styles.generateBtnText}>Build APK</Text>
         </TouchableOpacity>
       </View>
 
@@ -193,9 +198,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#0f3460",
   },
-  moonIcon: {
-    fontSize: 48,
-    color: "#FFD700",
+  heroIcon: {
+    width: 64,
+    height: 64,
     marginBottom: 12,
   },
   heroTitle: {

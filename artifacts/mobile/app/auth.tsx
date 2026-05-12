@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -32,20 +33,20 @@ export default function AuthScreen() {
 
   async function handleSubmit() {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Email aur password zaroori hai.");
+      Alert.alert("Error", "Email and password are required.");
       return;
     }
     if (tab === "signup") {
       if (!name.trim()) {
-        Alert.alert("Error", "Naam zaroori hai.");
+        Alert.alert("Error", "Name is required.");
         return;
       }
       if (password !== confirmPassword) {
-        Alert.alert("Error", "Passwords match nahi kar rahe.");
+        Alert.alert("Error", "Passwords do not match.");
         return;
       }
       if (password.length < 6) {
-        Alert.alert("Error", "Password kam az kam 6 characters ka hona chahiye.");
+        Alert.alert("Error", "Password must be at least 6 characters.");
         return;
       }
     }
@@ -61,7 +62,7 @@ export default function AuthScreen() {
       router.replace("/(tabs)");
     } catch (e: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert("Error", e.message || "Kuch masla hua. Dobara koshish karein.");
+      Alert.alert("Error", e.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -82,10 +83,14 @@ export default function AuthScreen() {
       >
         <View style={styles.header}>
           <View style={styles.logoWrapper}>
-            <Text style={styles.moonEmoji}>☽</Text>
+            <Image
+              source={require("@/assets/images/icon.png")}
+              style={styles.logo}
+              contentFit="contain"
+            />
           </View>
           <Text style={styles.appName}>ChandMod</Text>
-          <Text style={styles.tagline}>Website ko APK mein badlein</Text>
+          <Text style={styles.tagline}>Turn any website into an Android APK</Text>
         </View>
 
         <View style={styles.card}>
@@ -108,7 +113,7 @@ export default function AuthScreen() {
               <Feather name="user" size={18} color="#8892b0" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Aapka naam"
+                placeholder="Your name"
                 placeholderTextColor="#8892b0"
                 value={name}
                 onChangeText={setName}
@@ -167,7 +172,7 @@ export default function AuthScreen() {
 
           {tab === "login" && (
             <TouchableOpacity style={styles.forgotBtn}>
-              <Text style={styles.forgotText}>Password bhul gaye?</Text>
+              <Text style={styles.forgotText}>Forgot password?</Text>
             </TouchableOpacity>
           )}
 
@@ -181,14 +186,14 @@ export default function AuthScreen() {
               <ActivityIndicator color="#1a1a2e" />
             ) : (
               <Text style={styles.submitText}>
-                {tab === "login" ? "Login Karein" : "Account Banayein"}
+                {tab === "login" ? "Login" : "Create Account"}
               </Text>
             )}
           </TouchableOpacity>
 
           <View style={styles.switchRow}>
             <Text style={styles.switchLabel}>
-              {tab === "login" ? "Naya user? " : "Pehle se account hai? "}
+              {tab === "login" ? "New user? " : "Already have an account? "}
             </Text>
             <TouchableOpacity onPress={() => setTab(tab === "login" ? "signup" : "login")}>
               <Text style={styles.switchLink}>
@@ -217,19 +222,20 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   logoWrapper: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 88,
+    height: 88,
+    borderRadius: 22,
     backgroundColor: "#16213e",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
     borderWidth: 2,
     borderColor: "#FFD700",
+    overflow: "hidden",
   },
-  moonEmoji: {
-    fontSize: 40,
-    color: "#FFD700",
+  logo: {
+    width: 80,
+    height: 80,
   },
   appName: {
     fontSize: 32,
@@ -241,6 +247,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#8892b0",
     marginTop: 6,
+    textAlign: "center",
   },
   card: {
     backgroundColor: "#16213e",

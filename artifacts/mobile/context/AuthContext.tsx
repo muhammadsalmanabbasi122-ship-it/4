@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const found = Object.values(users).find(
       (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
     );
-    if (!found) throw new Error("Galat email ya password hai.");
+    if (!found) throw new Error("Incorrect email or password.");
     const { password: _, ...userWithoutPass } = found;
     await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userWithoutPass));
     setUser(userWithoutPass);
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const exists = Object.values(users).find(
       (u) => u.email.toLowerCase() === email.toLowerCase()
     );
-    if (exists) throw new Error("Yeh email pehle se registered hai.");
+    if (exists) throw new Error("This email is already registered.");
 
     const newUser: User & { password: string } = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),

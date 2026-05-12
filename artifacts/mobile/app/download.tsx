@@ -7,7 +7,6 @@ import {
   Animated,
   Easing,
   Linking,
-  Platform,
   Share,
   StyleSheet,
   Text,
@@ -43,18 +42,18 @@ export default function DownloadScreen() {
 
   function formatDate(iso: string) {
     const d = new Date(iso);
-    return d.toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" });
+    return d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
   }
 
   async function handleDownload() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert(
-      "Download",
-      `"${params.appName}" APK download shuru ho raha hai.\n\nLink: ${params.downloadLink}`,
+      "Download APK",
+      `"${params.appName}" APK is ready.\n\nLink: ${params.downloadLink}`,
       [
         { text: "OK" },
         {
-          text: "Browser Mein Kholein",
+          text: "Open in Browser",
           onPress: () => Linking.openURL(params.downloadLink),
         },
       ]
@@ -65,7 +64,7 @@ export default function DownloadScreen() {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await Share.share({
-        message: `ChandMod se "${params.appName}" ka APK download karein:\n${params.downloadLink}`,
+        message: `Download "${params.appName}" APK built with ChandMod:\n${params.downloadLink}`,
         title: `${params.appName} APK`,
       });
     } catch (e) {}
@@ -77,8 +76,8 @@ export default function DownloadScreen() {
         <View style={styles.checkCircle}>
           <Feather name="check" size={48} color="#1a1a2e" />
         </View>
-        <Text style={styles.successTitle}>APK Tayar Hai!</Text>
-        <Text style={styles.successSubtitle}>Aapka APK successfully ban gaya hai</Text>
+        <Text style={styles.successTitle}>APK Ready!</Text>
+        <Text style={styles.successSubtitle}>Your APK has been successfully built</Text>
       </Animated.View>
 
       <Animated.View style={[styles.detailCard, { opacity }]}>
@@ -118,7 +117,7 @@ export default function DownloadScreen() {
       <Animated.View style={[styles.buttonGroup, { opacity }]}>
         <TouchableOpacity style={styles.downloadBtn} onPress={handleDownload} activeOpacity={0.85}>
           <Feather name="download" size={20} color="#1a1a2e" />
-          <Text style={styles.downloadText}>APK Download Karein</Text>
+          <Text style={styles.downloadText}>Download APK</Text>
         </TouchableOpacity>
 
         <View style={styles.secondaryRow}>
@@ -133,7 +132,7 @@ export default function DownloadScreen() {
             activeOpacity={0.8}
           >
             <Feather name="home" size={18} color="#8892b0" />
-            <Text style={[styles.secondaryText, { color: "#8892b0" }]}>Ghar Jao</Text>
+            <Text style={[styles.secondaryText, { color: "#8892b0" }]}>Go Home</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>

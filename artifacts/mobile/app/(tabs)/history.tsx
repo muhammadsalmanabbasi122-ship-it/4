@@ -20,17 +20,17 @@ export default function HistoryScreen() {
 
   function formatDate(iso: string) {
     const d = new Date(iso);
-    return d.toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" });
+    return d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
   }
 
   async function handleDelete(id: string, name: string) {
     Alert.alert(
-      "Delete Karein?",
-      `"${name}" ko history se hata dein?`,
+      "Delete APK?",
+      `Remove "${name}" from history?`,
       [
-        { text: "Nahi", style: "cancel" },
+        { text: "Cancel", style: "cancel" },
         {
-          text: "Hata Dein",
+          text: "Delete",
           style: "destructive",
           onPress: async () => {
             await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -95,7 +95,7 @@ export default function HistoryScreen() {
   return (
     <View style={[styles.root, { paddingTop: topPad }]}>
       <Text style={styles.screenTitle}>APK History</Text>
-      <Text style={styles.screenSub}>{history.length} APK{history.length !== 1 ? "s" : ""} banaye</Text>
+      <Text style={styles.screenSub}>{history.length} APK{history.length !== 1 ? "s" : ""} built</Text>
 
       <FlatList
         data={history}
@@ -110,13 +110,13 @@ export default function HistoryScreen() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Feather name="inbox" size={56} color="#0f3460" />
-            <Text style={styles.emptyTitle}>Koi APK nahi</Text>
-            <Text style={styles.emptySub}>Abhi tak koi APK nahi bana.{"\n"}Home screen se banayein!</Text>
+            <Text style={styles.emptyTitle}>No APKs yet</Text>
+            <Text style={styles.emptySub}>You haven't built any APKs yet.{"\n"}Go to Home to get started!</Text>
             <TouchableOpacity
               style={styles.emptyBtn}
               onPress={() => router.push("/(tabs)")}
             >
-              <Text style={styles.emptyBtnText}>APK Banao</Text>
+              <Text style={styles.emptyBtnText}>Build an APK</Text>
             </TouchableOpacity>
           </View>
         }
@@ -191,7 +191,6 @@ const styles = StyleSheet.create({
   },
   meta: {
     fontSize: 11,
-    color: "#0f3460",
     color: "#8892b0",
   },
   metaDot: {

@@ -25,7 +25,7 @@ export default function ProfileScreen() {
 
   async function handleSave() {
     if (!newName.trim()) {
-      Alert.alert("Error", "Naam khali nahi ho sakta.");
+      Alert.alert("Error", "Name cannot be empty.");
       return;
     }
     await updateProfile({ name: newName.trim() });
@@ -34,8 +34,8 @@ export default function ProfileScreen() {
   }
 
   async function handleLogout() {
-    Alert.alert("Logout", "Kya aap logout karna chahte hain?", [
-      { text: "Nahi", style: "cancel" },
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
       {
         text: "Logout",
         style: "destructive",
@@ -97,12 +97,12 @@ export default function ProfileScreen() {
       <View style={styles.statsRow}>
         <View style={styles.statCard}>
           <Text style={styles.statNumber}>{history.length}</Text>
-          <Text style={styles.statLabel}>APKs Banaye</Text>
+          <Text style={styles.statLabel}>APKs Built</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statCard}>
           <Text style={styles.statNumber}>
-            {new Date(user?.createdAt || Date.now()).toLocaleDateString("en-PK", {
+            {new Date(user?.createdAt || Date.now()).toLocaleDateString("en-US", {
               month: "short",
               year: "numeric",
             })}
@@ -116,7 +116,7 @@ export default function ProfileScreen() {
         <View style={styles.menuCard}>
           <TouchableOpacity style={styles.menuItem} onPress={() => setEditing(true)}>
             <Feather name="edit-2" size={18} color="#FFD700" />
-            <Text style={styles.menuText}>Profile Edit Karein</Text>
+            <Text style={styles.menuText}>Edit Profile</Text>
             <Feather name="chevron-right" size={16} color="#8892b0" />
           </TouchableOpacity>
           <View style={styles.menuDivider} />

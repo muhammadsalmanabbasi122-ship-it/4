@@ -4,6 +4,7 @@ import {
   Alert,
   Animated,
   Easing,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -17,7 +18,7 @@ const STEPS = ["URL Check", "Packaging", "Ready"];
 export default function ConvertingScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ url: string; appName: string }>();
-  const { generateAPK, progress, currentStep, isGenerating } = useAPK();
+  const { generateAPK, progress, currentStep } = useAPK();
 
   const rotation = useRef(new Animated.Value(0)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
@@ -64,7 +65,7 @@ export default function ConvertingScreen() {
         },
       });
     } catch (e: any) {
-      Alert.alert("Error", "APK banane mein masla hua. Dobara koshish karein.");
+      Alert.alert("Error", "Failed to build APK. Please try again.");
       router.back();
     }
   }
@@ -82,13 +83,15 @@ export default function ConvertingScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.center}>
-        <Animated.View style={[styles.moonContainer, { transform: [{ rotate }] }]}>
-          <View style={styles.moon}>
-            <View style={styles.moonShadow} />
-          </View>
+        <Animated.View style={{ transform: [{ rotate }], marginBottom: 32 }}>
+          <Image
+            source={require("@/assets/images/icon.png")}
+            style={styles.spinningIcon}
+            resizeMode="contain"
+          />
         </Animated.View>
 
-        <Text style={styles.title}>APK ban raha hai...</Text>
+        <Text style={styles.title}>Building your APK...</Text>
         <Text style={styles.subtitle}>{params.appName || params.url}</Text>
 
         <View style={styles.progressContainer}>
@@ -131,13 +134,13 @@ export default function ConvertingScreen() {
       <TouchableOpacity
         style={styles.cancelBtn}
         onPress={() => {
-          Alert.alert("Cancel", "APK banana rok dein?", [
-            { text: "Nahi", style: "cancel" },
-            { text: "Rok Dein", style: "destructive", onPress: () => router.replace("/(tabs)") },
+          Alert.alert("Cancel", "Stop building the APK?", [
+            { text: "No", style: "cancel" },
+            { text: "Stop", style: "destructive", onPress: () => router.replace("/(tabs)") },
           ]);
         }}
       >
-        <Text style={styles.cancelText}>Rok Dein</Text>
+        <Text style={styles.cancelText}>Cancel</Text>
       </TouchableOpacity>
     </View>
   );
@@ -155,31 +158,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  moonContainer: {
-    width: 100,
-    height: 100,
-    marginBottom: 32,
-  },
-  moon: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#FFD700",
-    overflow: "hidden",
-    shadowColor: "#FFD700",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  moonShadow: {
-    position: "absolute",
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: "#1a1a2e",
-    top: -10,
-    right: -8,
+  spinningIcon: {
+    width: 90,
+    height: 90,
   },
   title: {
     fontSize: 24,
@@ -238,7 +219,6 @@ const styles = StyleSheet.create({
   },
   stepDotActive: {
     borderColor: "#FFD700",
-    backgroundColor: "#16213e",
   },
   stepDotDone: {
     borderColor: "#10b981",
