@@ -11,3 +11,9 @@ id = "8pjKCTL9V6lBM7SUeoe_2"
 uri = "file://chandmod-server.tar.gz"
 type = "unspecified"
 title = "ChandMod Server — chandtricker.qzz.io"
+
+[[outputs]]
+id = "ohi-gXrS5nAqoUqsOZXID"
+uri = "file://chandmod-app.tar.gz"
+type = "unspecified"
+title = "ChandMod App — GitHub ke liye ready"
