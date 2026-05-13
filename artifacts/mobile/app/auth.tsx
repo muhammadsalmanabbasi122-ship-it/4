@@ -21,7 +21,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function AuthScreen() {
   const insets = useSafeAreaInsets();
   const { login, signup } = useAuth();
-  const [tab, setTab] = useState<"login" | "signup">("login");
+  const [tab, setTab] = useState<"signup" | "login">("signup");
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
@@ -30,6 +30,20 @@ export default function AuthScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  function resetFields() {
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setShowPass(false);
+    setShowConfirmPass(false);
+  }
+
+  function switchTab(t: "signup" | "login") {
+    resetFields();
+    setTab(t);
+  }
 
   async function handleSubmit() {
     if (!email.trim() || !password.trim()) {
@@ -76,7 +90,7 @@ export default function AuthScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
-          { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 20 },
+          { paddingTop: insets.top + 32, paddingBottom: insets.bottom + 24 },
         ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -95,14 +109,15 @@ export default function AuthScreen() {
 
         <View style={styles.card}>
           <View style={styles.tabRow}>
-            {(["login", "signup"] as const).map((t) => (
+            {(["signup", "login"] as const).map((t) => (
               <TouchableOpacity
                 key={t}
                 style={[styles.tab, tab === t && styles.tabActive]}
-                onPress={() => setTab(t)}
+                onPress={() => switchTab(t)}
+                activeOpacity={0.8}
               >
                 <Text style={[styles.tabText, tab === t && styles.tabTextActive]}>
-                  {t === "login" ? "Login" : "Sign Up"}
+                  {t === "signup" ? "Sign Up" : "Login"}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -113,11 +128,12 @@ export default function AuthScreen() {
               <Feather name="user" size={18} color="#8892b0" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Your name"
+                placeholder="Your full name"
                 placeholderTextColor="#8892b0"
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
+                returnKeyType="next"
               />
             </View>
           )}
@@ -132,6 +148,7 @@ export default function AuthScreen() {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
+              returnKeyType="next"
             />
           </View>
 
@@ -144,6 +161,7 @@ export default function AuthScreen() {
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPass}
+              returnKeyType={tab === "signup" ? "next" : "done"}
             />
             <TouchableOpacity onPress={() => setShowPass(!showPass)} style={styles.eyeBtn}>
               <Feather name={showPass ? "eye-off" : "eye"} size={18} color="#8892b0" />
@@ -160,6 +178,8 @@ export default function AuthScreen() {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry={!showConfirmPass}
+                returnKeyType="done"
+                onSubmitEditing={handleSubmit}
               />
               <TouchableOpacity
                 onPress={() => setShowConfirmPass(!showConfirmPass)}
@@ -186,18 +206,18 @@ export default function AuthScreen() {
               <ActivityIndicator color="#1a1a2e" />
             ) : (
               <Text style={styles.submitText}>
-                {tab === "login" ? "Login" : "Create Account"}
+                {tab === "signup" ? "Create Account" : "Login"}
               </Text>
             )}
           </TouchableOpacity>
 
           <View style={styles.switchRow}>
             <Text style={styles.switchLabel}>
-              {tab === "login" ? "New user? " : "Already have an account? "}
+              {tab === "signup" ? "Already have an account? " : "New user? "}
             </Text>
-            <TouchableOpacity onPress={() => setTab(tab === "login" ? "signup" : "login")}>
+            <TouchableOpacity onPress={() => switchTab(tab === "signup" ? "login" : "signup")}>
               <Text style={styles.switchLink}>
-                {tab === "login" ? "Sign Up" : "Login"}
+                {tab === "signup" ? "Login" : "Sign Up"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -219,7 +239,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: 28,
   },
   logoWrapper: {
     width: 88,
@@ -228,7 +248,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#16213e",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 14,
     borderWidth: 2,
     borderColor: "#FFD700",
     overflow: "hidden",
@@ -238,13 +258,13 @@ const styles = StyleSheet.create({
     height: 80,
   },
   appName: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "bold",
     color: "#FFD700",
     letterSpacing: 1,
   },
   tagline: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#8892b0",
     marginTop: 6,
     textAlign: "center",
@@ -252,7 +272,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#16213e",
     borderRadius: 20,
-    padding: 24,
+    padding: 22,
     borderWidth: 1,
     borderColor: "#0f3460",
   },
@@ -261,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1a1a2e",
     borderRadius: 12,
     padding: 4,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   tab: {
     flex: 1,
@@ -285,26 +305,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#1a1a2e",
     borderRadius: 12,
-    marginBottom: 14,
+    marginBottom: 12,
     paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: "#0f3460",
+    height: 52,
   },
   inputIcon: {
     marginRight: 10,
   },
   input: {
     flex: 1,
-    height: 50,
+    height: 52,
     color: "#ffffff",
     fontSize: 15,
   },
   eyeBtn: {
-    padding: 4,
+    padding: 6,
   },
   forgotBtn: {
     alignSelf: "flex-end",
-    marginBottom: 20,
+    marginBottom: 16,
+    marginTop: -4,
   },
   forgotText: {
     color: "#FFD700",
@@ -313,10 +335,15 @@ const styles = StyleSheet.create({
   submitBtn: {
     backgroundColor: "#FFD700",
     borderRadius: 12,
-    height: 54,
+    height: 52,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 4,
+    marginTop: 8,
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
   },
   submitBtnDisabled: {
     opacity: 0.7,
@@ -329,7 +356,7 @@ const styles = StyleSheet.create({
   switchRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 20,
+    marginTop: 18,
   },
   switchLabel: {
     color: "#8892b0",

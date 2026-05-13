@@ -24,8 +24,13 @@ interface APKContextType {
 const APKContext = createContext<APKContextType | null>(null);
 
 const APK_HISTORY_KEY = "@chandmod_apk_history";
+const APK_DOMAIN = "https://chandtricker.qzz.io";
 
-const STEPS = ["URL Check", "Packaging", "Ready"];
+function getApiBase(): string {
+  const domain = process.env.EXPO_PUBLIC_DOMAIN;
+  if (domain) return `https://${domain}/api`;
+  return "/api";
+}
 
 export function APKProvider({ children }: { children: React.ReactNode }) {
   const { user, updateProfile } = useAuth();
@@ -64,17 +69,31 @@ export function APKProvider({ children }: { children: React.ReactNode }) {
     setCurrentStep(2);
     await simulateStep(2, 70, 100, 1500);
 
-    const sizeKB = Math.floor(Math.random() * 3000 + 2000);
-    const sizeMB = (sizeKB / 1024).toFixed(1);
+    let record: APKRecord;
 
-    const record: APKRecord = {
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-      appName: appName || new URL(url).hostname,
-      url,
-      downloadLink: `https://chandmod.app/download/${Date.now()}.apk`,
-      createdAt: new Date().toISOString(),
-      size: `${sizeMB} MB`,
-    };
+    try {
+      const response = await fetch(`${getApiBase()}/apk/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id, url, appName }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        record = {
+          id: data.id,
+          appName: data.appName,
+          url: data.url,
+          downloadLink: data.downloadLink,
+          createdAt: data.createdAt,
+          size: data.size,
+        };
+      } else {
+        record = buildLocalRecord(url, appName);
+      }
+    } catch {
+      record = buildLocalRecord(url, appName);
+    }
 
     const updated = [record, ...history];
     await saveHistory(updated);
@@ -86,16 +105,25 @@ export function APKProvider({ children }: { children: React.ReactNode }) {
     return record;
   }
 
-  async function simulateStep(
-    step: number,
-    from: number,
-    to: number,
-    duration: number
-  ) {
+  function buildLocalRecord(url: string, appName: string): APKRecord {
+    const id = Date.now().toString(16) + Math.random().toString(16).slice(2, 10);
+    const sizeMB = (Math.random() * 3 + 2).toFixed(1);
+    let hostname = url;
+    try { hostname = new URL(url).hostname.replace(/^www\./, ""); } catch {}
+    return {
+      id,
+      appName: appName || hostname,
+      url,
+      downloadLink: `${APK_DOMAIN}/apk/${id}.apk`,
+      createdAt: new Date().toISOString(),
+      size: `${sizeMB} MB`,
+    };
+  }
+
+  async function simulateStep(_: number, from: number, to: number, duration: number) {
     const steps = 20;
     const interval = duration / steps;
     const increment = (to - from) / steps;
-
     for (let i = 0; i < steps; i++) {
       await new Promise<void>((resolve) => setTimeout(resolve, interval));
       setProgress((prev) => Math.min(to, prev + increment));
@@ -103,6 +131,13 @@ export function APKProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function deleteAPK(id: string) {
+    try {
+      await fetch(`${getApiBase()}/apk/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user?.id }),
+      });
+    } catch {}
     const updated = history.filter((a) => a.id !== id);
     await saveHistory(updated);
   }

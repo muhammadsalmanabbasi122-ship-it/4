@@ -6,7 +6,7 @@ import {
   useFonts,
 } from "@expo-google-fonts/inter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Redirect, Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -23,34 +23,42 @@ const queryClient = new QueryClient();
 
 function RootLayoutNav() {
   const { user, isLoading } = useAuth();
+  const router = useRouter();
+  const segments = useSegments();
 
-  if (isLoading) return null;
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthScreen = segments[0] === "auth";
+    const inTabsGroup = segments[0] === "(tabs)";
+
+    if (!user && !inAuthScreen) {
+      router.replace("/auth");
+    } else if (user && (inAuthScreen || segments.length === 0)) {
+      router.replace("/(tabs)");
+    }
+  }, [user, isLoading, segments]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {user ? (
-        <>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="converting"
-            options={{
-              headerShown: false,
-              presentation: "fullScreenModal",
-              animation: "slide_from_bottom",
-            }}
-          />
-          <Stack.Screen
-            name="download"
-            options={{
-              headerShown: false,
-              presentation: "fullScreenModal",
-              animation: "slide_from_bottom",
-            }}
-          />
-        </>
-      ) : (
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
-      )}
+      <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="converting"
+        options={{
+          headerShown: false,
+          presentation: "fullScreenModal",
+          animation: "slide_from_bottom",
+        }}
+      />
+      <Stack.Screen
+        name="download"
+        options={{
+          headerShown: false,
+          presentation: "fullScreenModal",
+          animation: "slide_from_bottom",
+        }}
+      />
     </Stack>
   );
 }
