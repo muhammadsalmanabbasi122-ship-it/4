@@ -9,6 +9,8 @@ export interface APKRecord {
   downloadLink: string;
   createdAt: string;
   size: string;
+  appIcon?: string;
+  downloads?: number;
 }
 
 interface APKContextType {
@@ -58,7 +60,7 @@ export function APKProvider({ children }: { children: React.ReactNode }) {
     setHistory(records);
   }
 
-  async function generateAPK(url: string, appName: string): Promise<APKRecord> {
+  async function generateAPK(url: string, appName: string, appIcon?: string): Promise<APKRecord> {
     setIsGenerating(true);
     setProgress(0);
     setCurrentStep(0);
@@ -87,12 +89,14 @@ export function APKProvider({ children }: { children: React.ReactNode }) {
           downloadLink: data.downloadLink,
           createdAt: data.createdAt,
           size: data.size,
+          appIcon,
+          downloads: data.downloads ?? 0,
         };
       } else {
-        record = buildLocalRecord(url, appName);
+        record = buildLocalRecord(url, appName, appIcon);
       }
     } catch {
-      record = buildLocalRecord(url, appName);
+      record = buildLocalRecord(url, appName, appIcon);
     }
 
     const updated = [record, ...history];
@@ -105,7 +109,7 @@ export function APKProvider({ children }: { children: React.ReactNode }) {
     return record;
   }
 
-  function buildLocalRecord(url: string, appName: string): APKRecord {
+  function buildLocalRecord(url: string, appName: string, appIcon?: string): APKRecord {
     const id = Date.now().toString(16) + Math.random().toString(16).slice(2, 10);
     const sizeMB = (Math.random() * 3 + 2).toFixed(1);
     let hostname = url;
@@ -117,6 +121,8 @@ export function APKProvider({ children }: { children: React.ReactNode }) {
       downloadLink: `${APK_DOMAIN}/apk/${id}.apk`,
       createdAt: new Date().toISOString(),
       size: `${sizeMB} MB`,
+      appIcon,
+      downloads: 0,
     };
   }
 

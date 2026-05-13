@@ -14,8 +14,10 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AlertProvider } from "@/context/AlertContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { APKProvider } from "@/context/APKContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -87,7 +89,11 @@ export default function RootLayout() {
             <KeyboardProvider>
               <AuthProvider>
                 <APKProvider>
-                  <RootLayoutNav />
+                  <ThemeProvider>
+                    <AlertProvider>
+                      <RootLayoutNav />
+                    </AlertProvider>
+                  </ThemeProvider>
                 </APKProvider>
               </AuthProvider>
             </KeyboardProvider>

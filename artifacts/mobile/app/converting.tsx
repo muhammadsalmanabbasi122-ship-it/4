@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef } from "react";
 import {
-  Alert,
   Animated,
   Easing,
   Image,
@@ -11,13 +10,18 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAlert } from "@/context/AlertContext";
 import { useAPK } from "@/context/APKContext";
+import { useThemeColors } from "@/context/ThemeContext";
 
 const STEPS = ["URL Check", "Packaging", "Ready"];
 
 export default function ConvertingScreen() {
+  const c = useThemeColors();
+  const styles = makeStyles(c);
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams<{ url: string; appName: string }>();
+  const params = useLocalSearchParams<{ url: string; appName: string; appIcon?: string }>();
+  const { showAlert } = useAlert();
   const { generateAPK, progress, currentStep } = useAPK();
 
   const rotation = useRef(new Animated.Value(0)).current;
@@ -52,7 +56,7 @@ export default function ConvertingScreen() {
 
   async function startGeneration() {
     try {
-      const record = await generateAPK(params.url, params.appName || "");
+      const record = await generateAPK(params.url, params.appName || "", params.appIcon || undefined);
       router.replace({
         pathname: "/download",
         params: {
@@ -62,10 +66,12 @@ export default function ConvertingScreen() {
           downloadLink: record.downloadLink,
           size: record.size,
           createdAt: record.createdAt,
+          appIcon: params.appIcon || "",
+          downloads: String(record.downloads ?? 0),
         },
       });
     } catch (e: any) {
-      Alert.alert("Error", "Failed to build APK. Please try again.");
+      showAlert("Error", "Failed to build APK. Please try again.");
       router.back();
     }
   }
@@ -134,7 +140,7 @@ export default function ConvertingScreen() {
       <TouchableOpacity
         style={styles.cancelBtn}
         onPress={() => {
-          Alert.alert("Cancel", "Stop building the APK?", [
+          showAlert("Cancel", "Stop building the APK?", [
             { text: "No", style: "cancel" },
             { text: "Stop", style: "destructive", onPress: () => router.replace("/(tabs)") },
           ]);
@@ -146,116 +152,118 @@ export default function ConvertingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: "#1a1a2e",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-  },
-  center: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  spinningIcon: {
-    width: 90,
-    height: 90,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#ffffff",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: "#8892b0",
-    marginBottom: 32,
-    textAlign: "center",
-    maxWidth: 280,
-  },
-  progressContainer: {
-    width: "100%",
-    marginBottom: 32,
-    alignItems: "flex-end",
-  },
-  progressTrack: {
-    width: "100%",
-    height: 8,
-    backgroundColor: "#16213e",
-    borderRadius: 4,
-    overflow: "hidden",
-    marginBottom: 8,
-  },
-  progressBar: {
-    height: "100%",
-    backgroundColor: "#FFD700",
-    borderRadius: 4,
-  },
-  progressText: {
-    color: "#FFD700",
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  stepsContainer: {
-    width: "100%",
-    gap: 16,
-  },
-  stepRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-  },
-  stepDot: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: "#0f3460",
-    backgroundColor: "#16213e",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  stepDotActive: {
-    borderColor: "#FFD700",
-  },
-  stepDotDone: {
-    borderColor: "#10b981",
-    backgroundColor: "#10b981",
-  },
-  stepDotInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#FFD700",
-  },
-  stepCheck: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  stepText: {
-    fontSize: 16,
-    color: "#8892b0",
-  },
-  stepTextActive: {
-    color: "#ffffff",
-    fontWeight: "600",
-  },
-  stepTextDone: {
-    color: "#10b981",
-  },
-  cancelBtn: {
-    marginBottom: 20,
-    padding: 16,
-    alignItems: "center",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#0f3460",
-  },
-  cancelText: {
-    color: "#8892b0",
-    fontSize: 16,
-  },
-});
+function makeStyles(c: ReturnType<typeof useThemeColors>) {
+  return StyleSheet.create({
+    root: {
+      flex: 1,
+      backgroundColor: c.bg,
+      justifyContent: "space-between",
+      paddingHorizontal: 24,
+    },
+    center: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    spinningIcon: {
+      width: 90,
+      height: 90,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: c.text,
+      marginBottom: 8,
+    },
+    subtitle: {
+      fontSize: 13,
+      color: c.textSecondary,
+      marginBottom: 32,
+      textAlign: "center",
+      maxWidth: 280,
+    },
+    progressContainer: {
+      width: "100%",
+      marginBottom: 32,
+      alignItems: "flex-end",
+    },
+    progressTrack: {
+      width: "100%",
+      height: 8,
+      backgroundColor: c.surface,
+      borderRadius: 4,
+      overflow: "hidden",
+      marginBottom: 8,
+    },
+    progressBar: {
+      height: "100%",
+      backgroundColor: c.accent,
+      borderRadius: 4,
+    },
+    progressText: {
+      color: c.accent,
+      fontWeight: "bold",
+      fontSize: 14,
+    },
+    stepsContainer: {
+      width: "100%",
+      gap: 16,
+    },
+    stepRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 14,
+    },
+    stepDot: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      borderWidth: 2,
+      borderColor: c.border,
+      backgroundColor: c.surface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    stepDotActive: {
+      borderColor: c.accent,
+    },
+    stepDotDone: {
+      borderColor: "#10b981",
+      backgroundColor: "#10b981",
+    },
+    stepDotInner: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      backgroundColor: c.accent,
+    },
+    stepCheck: {
+      color: c.text,
+      fontSize: 14,
+      fontWeight: "bold",
+    },
+    stepText: {
+      fontSize: 16,
+      color: c.textSecondary,
+    },
+    stepTextActive: {
+      color: c.text,
+      fontWeight: "600",
+    },
+    stepTextDone: {
+      color: "#10b981",
+    },
+    cancelBtn: {
+      marginBottom: 20,
+      padding: 16,
+      alignItems: "center",
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    cancelText: {
+      color: c.textSecondary,
+      fontSize: 16,
+    },
+  });
+}

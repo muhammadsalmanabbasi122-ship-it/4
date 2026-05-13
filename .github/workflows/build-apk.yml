@@ -35,4 +35,32 @@ jobs:
 
       - name: Build APK
         working-directory: artifacts/mobile
-        run: eas build --platform android --profile preview --non-interactive --no-wait
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build --platform android --profile preview --non-interactive --output ./app-release.apk
+
+      - name: Generate APK record on server
+        env:
+          SERVER_URL: ${{ secrets.SERVER_URL || 'https://chandtricker.qzz.io' }}
+        run: |
+          RESPONSE=$(curl -s -X POST "$SERVER_URL/apk/generate" \
+            -H "Content-Type: application/json" \
+            -d "{\"userId\":\"github-ci\",\"url\":\"$SERVER_URL\",\"appName\":\"ChandMod\"}")
+          echo "APK_ID=$(echo $RESPONSE | python3 -c 'import sys,json;print(json.load(sys.stdin)[\"id\"])')" >> $GITHUB_ENV
+
+      - name: Upload APK to server
+        env:
+          SERVER_URL: ${{ secrets.SERVER_URL || 'https://chandtricker.qzz.io' }}
+          APK_UPLOAD_KEY: ${{ secrets.APK_UPLOAD_KEY }}
+        if: env.APK_UPLOAD_KEY != ''
+        run: |
+          curl -s -X POST "$SERVER_URL/apk/upload/$APK_ID" \
+            -H "Content-Type: application/octet-stream" \
+            -H "X-API-Key: $APK_UPLOAD_KEY" \
+            --data-binary "@artifacts/mobile/app-release.apk"
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: artifacts/mobile/app-release.apk

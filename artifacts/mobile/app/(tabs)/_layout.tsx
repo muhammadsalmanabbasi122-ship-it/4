@@ -5,7 +5,8 @@ import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import { SymbolView } from "expo-symbols";
 import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { Platform, StyleSheet, View, useColorScheme } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
+import { useThemeColors } from "@/context/ThemeContext";
 
 function NativeTabLayout() {
   return (
@@ -31,27 +32,21 @@ function NativeTabLayout() {
 }
 
 function ClassicTabLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const c = useThemeColors();
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
-
-  const primary = "#FFD700";
-  const muted = "#8892b0";
-  const bg = "#1a1a2e";
-  const border = "#0f3460";
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: primary,
-        tabBarInactiveTintColor: muted,
+        tabBarActiveTintColor: c.accent,
+        tabBarInactiveTintColor: c.textSecondary,
         headerShown: false,
         tabBarStyle: {
           position: "absolute",
-          backgroundColor: isIOS ? "transparent" : bg,
+          backgroundColor: isIOS ? "transparent" : c.surface2,
           borderTopWidth: 1,
-          borderTopColor: border,
+          borderTopColor: c.border,
           elevation: 0,
           height: isWeb ? 84 : 60,
         },
@@ -63,7 +58,7 @@ function ClassicTabLayout() {
               style={StyleSheet.absoluteFill}
             />
           ) : isWeb ? (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: bg }]} />
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: c.surface2 }]} />
           ) : null,
         tabBarLabelStyle: {
           fontSize: 11,
